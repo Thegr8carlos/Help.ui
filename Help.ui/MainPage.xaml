@@ -25,7 +25,7 @@
                 SemanticProperties.Description="Welcome to our AI assistant to make your life easier" />
 
             <!-- Switch con evento Toggled -->
-            <Switch x:Name="estadoSwitch"  
+            <Switch x:Name="estadoSwitch"                 
                 HorizontalOptions="Center" />
             
         </VerticalStackLayout>
