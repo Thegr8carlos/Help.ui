@@ -1,0 +1,19 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# compile
+bin/
+obj/
+
+# NuGet packages
+packages/
+*.nupkg
+*.snupkg
+
+# local
+appsettings.Development.json
+
+# other
+*.log
