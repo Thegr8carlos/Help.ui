@@ -1,0 +1,8 @@
+- Asistente flotante
+  Definir como se vera graficamente el boton.
+  Definir como se vera el panel de opciones cuando se presiona el boton.
+  Definir coomo se veran las respuestas del boton dependiendo de la funcionalidad (texto, voz)
+- Clases
+  Definir el diagrama de clases para la applicacion (microservices, buttonHandler, Assistant)
+
+Definir como seran las respuestas del sistema al usuario (Como se les presentaran).
