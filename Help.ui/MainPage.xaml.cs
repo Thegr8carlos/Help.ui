@@ -6,7 +6,8 @@ public partial class MainPage : ContentPage
 	public MainPage()
 	{
 		InitializeComponent();
-        AssistanOn.IsToggled = (Application.Current as App)?.IsAssistantActive ?? false;
+        // checks the stored value in the system if not exists then sets to false
+        AssistanOn.IsToggled = (Application.Current as App)?.IsAssistantActive ?? false; 
 
 
     }
