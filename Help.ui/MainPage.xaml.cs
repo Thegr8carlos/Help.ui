@@ -1,5 +1,5 @@
 ﻿namespace Help.ui;
- 
+using Android.Content;
 public partial class MainPage : ContentPage
 {
 
@@ -18,14 +18,30 @@ public partial class MainPage : ContentPage
         {
             // must display the button
             Preferences.Set("IsAssistantActive", e.Value);
-            DisplayAlert("Estado del asistente", "Asistente activado.", "OK");
+            StartFloatingButtonService();
         }
         else
         {
             //must delete the button
             Preferences.Set("IsAssistantActive", e.Value);
-            DisplayAlert("Estado del asistente", "Asistente desactivado.", "OK");
+            StopFloatingButtonService();
         }
+    }
+
+    private void StartFloatingButtonService()
+    {
+        // Crear un intent para iniciar el servicio
+        var intent = new Intent(Android.App.Application.Context, typeof(FloatingButtonService));
+        Android.App.Application.Context.StartService(intent);
+        DisplayAlert("Estado del asistente", "Servicio activado", "OK");
+    }
+
+    private void StopFloatingButtonService()
+    {
+        // Crear un intent para detener el servicio
+        var intent = new Intent(Android.App.Application.Context, typeof(FloatingButtonService));
+        Android.App.Application.Context.StopService(intent);
+        DisplayAlert("Estado del asistente", "Servicio desactivado.", "OK");
     }
 
 }
