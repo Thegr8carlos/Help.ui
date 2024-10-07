@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maui="http://schemas.microsoft.com/dotnet/2021/maui"
              x:Class="Help.ui.MainPage">
 
     <ScrollView>
@@ -14,24 +15,65 @@
                 SemanticProperties.Description="dot net bot in a race car number eight" />
 
             <Label
-                Text="AI Assistant!"
+                Text="nombred del asistente"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 
             <Label
-                Text="Welcome to our AI assistant to make your life easier"
+                Text="Estoy aquí para ayudarte a aprender a usar tu teléfono de manera más sencilla y efectiva."
                 Style="{StaticResource SubHeadline}"
                 SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to our AI assistant to make your life easier" />
+                SemanticProperties.Description="Text to display in the screen" />
 
-            <!-- Switch con evento Toggled -->
+    
             <Switch x:Name="AssistanOn"                 
                 HorizontalOptions="Center"
                 OnColor="Black"
                 ThumbColor="Purple"
-                Toggled="SwitchChanged"/>
-                 
+                Toggled="SwitchChanged"
+                Scale="3.5"/>
+
+            <Label x:Name="StateMessage"
+                Text="Desactivado"
+                Style="{StaticResource SubHeadline}"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                FontSize="24"
+                TextColor="Black" />
             
+            <Grid HeightRequest="100"
+                  VerticalOptions="End"
+                  Margin="0,30,0,0">
+                <!-- Tree columns definition -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- SVG lowerLfeft -->
+                <Image x:Name="AppMode"
+                       Source="voice.svg"
+                       Aspect="AspectFit"
+                       Grid.Column="0"
+                       HorizontalOptions="Start"
+                       VerticalOptions="Center">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnModeTapped" />
+                    </Image.GestureRecognizers>
+                </Image>
+                <!-- SVG lowerright-->
+                <Image x:Name="Settings"
+                       Source="settings.svg"
+                       Aspect="AspectFit"
+                       Grid.Column="2"
+                       HorizontalOptions="End"
+                       VerticalOptions="Center">
+                    <Image.GestureRecognizers>
+                       <TapGestureRecognizer Tapped="OnSettingsTapped" />
+                       </Image.GestureRecognizers>
+                </Image>
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 
