@@ -31,7 +31,7 @@
                 OnColor="Black"
                 ThumbColor="Purple"
                 Toggled="SwitchChanged"
-                Scale="3.5"/>
+                Scale="3.0"/>
 
             <Label x:Name="StateMessage"
                 Text="Desactivado"
@@ -71,7 +71,7 @@
                        VerticalOptions="Center">
                     <Image.GestureRecognizers>
                        <TapGestureRecognizer Tapped="OnSettingsTapped" />
-                       </Image.GestureRecognizers>
+                    </Image.GestureRecognizers>
                 </Image>
             </Grid>
         </VerticalStackLayout>

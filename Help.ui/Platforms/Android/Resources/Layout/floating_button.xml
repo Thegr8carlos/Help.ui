@@ -4,13 +4,14 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center">
 
-    <View
+    <ImageView
         android:id="@+id/floating_button"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:background="@android:color/holo_blue_light"
+        android:src="@drawable/helper"
         android:layout_gravity="center"
         android:elevation="8dp"
-        android:contentDescription="Botón flotante de muestra" />
+        android:tint="#800080" 
+        android:contentDescription="Botón flotante con imagen" />
 
 </FrameLayout>

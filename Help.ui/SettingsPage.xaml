@@ -1,0 +1,41 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Help.ui.SettingsPage"
+             Title="Configuraciones">
+    <VerticalStackLayout Padding="20">
+        
+        <Label 
+            Text="Configuraciones"
+            FontSize="24"
+            HorizontalOptions="Center" />
+
+      
+        <Label Text="Nombre:" FontSize="16" />
+        <Entry Placeholder="Ingresa tu nombre" x:Name="NombreEntry" />
+
+       
+        <Label Text="Edad:" FontSize="16" />
+        <Entry Placeholder="Ingresa tu edad" x:Name="EdadEntry" Keyboard="Numeric" />
+
+        
+        <Label Text="Tamaño de letras:" FontSize="16" />
+        <Slider x:Name="FontSizeSlider" Minimum="10" Maximum="30" Value="16" />
+        <Label Text="{Binding Source={x:Reference FontSizeSlider}, Path=Value, StringFormat='Tamaño: {0:F0}'}" FontSize="16" />
+
+        <Label Text="Tipo de voz:" FontSize="16" />
+        <Picker x:Name="VoiceTypePicker">
+            <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Femenina</x:String>
+                    <x:String>Masculina</x:String>
+                    <x:String>Neutral</x:String>
+                </x:Array>
+            </Picker.ItemsSource>
+        </Picker>
+
+        <Button Text="Aceptar Cambios" Clicked="OnAceptarCambiosClicked" />
+
+        <Button Text="Volver a la página principal" Clicked="OnBackButtonClicked" />
+
+    </VerticalStackLayout>
+</ContentPage>

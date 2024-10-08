@@ -79,9 +79,9 @@ public partial class MainPage : ContentPage
         SetIsVoiceEnabled((Application.Current as App).IsVoiceEnabled);
     }
 
-    private void OnSettingsTapped(object sender, EventArgs e)
+    private async void OnSettingsTapped(object sender, EventArgs e)
     {
-        //
+        await Shell.Current.GoToAsync("///SettingsPage");
     }
 
 }
