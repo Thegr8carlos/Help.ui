@@ -1,14 +1,8 @@
-- Asistente flotante
-  Definir como se vera graficamente el boton.
-  Definir como se vera el panel de opciones cuando se presiona el boton.
-  Definir coomo se veran las respuestas del boton dependiendo de la funcionalidad (texto, voz)
-- Clases
-  Definir el diagrama de clases para la applicacion (microservices, buttonHandler, Assistant)
-
-Definir como seran las respuestas del sistema al usuario (Como se les presentaran).
-
-
-
-said was here
-
-estuve aqui de nuebvo culeros
+- agregar el xml para el menu de ayudas 
+  * hacer el cambio de xml de boton a menu cuando se haga click en el boton
+  * hacer el cambio de xml de menu a boton cuando se haga click afuera del menu
+- implementar una clase para las respuestas de texto o expandir la clase del boton para mostrar salidas de mensaje usando data binding??? o investigar la mejor manera de mostrar el texto 
+- implementar el servicio de grabar audio y obtener una cadena
+- empezar a investigar sobre los servicios.
+- mejorar las vistas
+- arreglar el codigo para que el boton se pueda mover tambien a los lados y no solo de arriba a abajo
