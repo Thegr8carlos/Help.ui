@@ -1,14 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center">
+﻿<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/menu_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
 
-    <ImageView
-        android:id="@+id/menuAssistant"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/menuassistant" 
-        android:contentDescription="Rectángulo con borde y transparencia" />
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:padding="16dp">
 
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Botón 1"
+            android:onClick="OnButton1Click" /> <!-- Acción del botón 1 -->
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Botón 2"
+            android:layout_marginTop="8dp"
+            android:onClick="OnButton2Click" /> <!-- Acción del botón 2 -->
+
+    </LinearLayout>
 </FrameLayout>
