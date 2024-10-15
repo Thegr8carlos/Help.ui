@@ -16,14 +16,14 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Botón 1"
+            android:text="Explicarme lo que veo"
             android:onClick="OnButton1Click" /> <!-- Acción del botón 1 -->
 
         <Button
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Botón 2"
+            android:text="hazme una pregunta"
             android:layout_marginTop="8dp"
             android:onClick="OnButton2Click" /> <!-- Acción del botón 2 -->
 

@@ -142,18 +142,33 @@ public class FloatingButtonService : Service
         {
             _windowManager.AddView(_menuView, _menuLayoutParams);
 
-            // No es necesario buscar los botones manualmente, ya que los clics están definidos en el XML
+            var button1 = _menuView.FindViewById<Android.Widget.Button>(_menuView.Context.Resources.GetIdentifier("button1", "id", _menuView.Context.PackageName));
+            var button2 = _menuView.FindViewById<Android.Widget.Button>(_menuView.Context.Resources.GetIdentifier("button2", "id", _menuView.Context.PackageName));
+
+            if (button1 != null)
+            {
+                button1.Click += (s, e) => OnButton1Click(s as Android.Views.View);
+            }
+
+            if (button2 != null)
+            {
+                button2.Click += (s, e) => OnButton2Click(s as Android.Views.View);
+            }
+
+            // Listener para detectar toques fuera del menú
             _menuView.SetOnTouchListener(new MenuTouchListener(this, _windowManager, _menuView, _floatingButton, _layoutParams));
         }
     }
+
     public void OnButton1Click(Android.Views.View view)
     {
-        Toast.MakeText(this, "Botón 1 presionado", ToastLength.Short).Show();
+        Console.WriteLine("Se hara la captura o toma de la informacion");
+
     }
 
     public void OnButton2Click(Android.Views.View view)
     {
-        Toast.MakeText(this, "Botón 2 presionado", ToastLength.Short).Show();
+        Console.WriteLine("Se hara la grabacion de audio y obtencion de la respuesta");
     }
 }
 
