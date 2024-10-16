@@ -24,8 +24,11 @@
 		<ApplicationVersion>1</ApplicationVersion>
 		<!-- Only for android -->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-		
-	
+
+		<AndroidManifest>Platforms/Android/AndroidManifest.xml</AndroidManifest>
+
+		<!-- Desactivar generación automática -->
+		<GenerateAndroidManifest>false</GenerateAndroidManifest>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -47,6 +50,16 @@
 
 	<ItemGroup>
 		<AndroidResource Include="Platforms\Android\Resources\layout\floating_button.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AndroidPermission Include="android.permission.ACCESS_NETWORK_STATE" />
+		<AndroidPermission Include="android.permission.INTERNET" />
+		<AndroidPermission Include="android.permission.FOREGROUND_SERVICE" />
+		<AndroidPermission Include="android.permission.SYSTEM_ALERT_WINDOW" />
+		<AndroidPermission Include="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+		<AndroidPermission Include="android.permission.RECORD_AUDIO" />
+		<AndroidPermission Include="android.permission.WRITE_EXTERNAL_STORAGE" />
 	</ItemGroup>
 
 
