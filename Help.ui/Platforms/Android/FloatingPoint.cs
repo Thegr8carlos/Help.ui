@@ -90,7 +90,7 @@ public class FloatingButtonService : Service
             WindowManagerLayoutParams.MatchParent,
             WindowManagerLayoutParams.MatchParent,
             layoutType,
-            WindowManagerFlags.WatchOutsideTouch ,
+            WindowManagerFlags.WatchOutsideTouch,
             Format.Translucent)
         {
             Gravity = GravityFlags.Fill,
@@ -116,18 +116,34 @@ public class FloatingButtonService : Service
     public override void OnDestroy()
     {
         base.OnDestroy();
+
         // Remover el botón flotante
         if (_floatingButton != null)
         {
-            _windowManager?.RemoveView(_floatingButton);
+            try
+            {
+                _windowManager?.RemoveView(_floatingButton);
+            }
+            catch (Java.Lang.IllegalArgumentException e)
+            {
+                Console.WriteLine("El botón flotante ya ha sido removido.");
+            }
         }
 
         // Remover el menú si está visible
         if (_menuView != null)
         {
-            _windowManager?.RemoveView(_menuView);
+            try
+            {
+                _windowManager?.RemoveView(_menuView);
+            }
+            catch (Java.Lang.IllegalArgumentException e)
+            {
+                Console.WriteLine("El menú ya ha sido removido.");
+            }
         }
     }
+
 
     private void OnFloatingButtonClick()
     {
@@ -222,7 +238,6 @@ public class FloatingButtonTouchListener : Java.Lang.Object, Android.Views.View.
     }
 }
 
-// Clase para manejar los eventos táctiles en el menú
 public class MenuTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchListener
 {
     private Context _context;
@@ -244,20 +259,21 @@ public class MenuTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchLi
     {
         if (e.Action == MotionEventActions.Down)
         {
+            // Crear un rectángulo para obtener el área visible del menú
+            Android.Graphics.Rect menuRect = new Android.Graphics.Rect();
+            _menuView.GetGlobalVisibleRect(menuRect);
+
+            int minX = 266;
+            int maxX = 800;
+            int minY = 992;
+            int maxY = 1401;
+
             // Obtener las coordenadas del toque
-            int x = (int)e.RawX;
-            int y = (int)e.RawY;
+            int touchX = (int)e.RawX;
+            int touchY = (int)e.RawY;
 
-            // Obtener las dimensiones del menú completo
-            int[] location = new int[2];
-            _menuView.GetLocationOnScreen(location);
-            int left = location[0];
-            int top = location[1];
-            int right = left + _menuView.Width;
-            int bottom = top + _menuView.Height;
-
-            // Verificar si el toque está fuera del menú
-            if (x < left || x > right || y < top || y > bottom)
+            // Comprobar si está fuera del rectángulo
+            if (touchX < minX || touchX > maxX || touchY < minY || touchY > maxY)
             {
                 // Remover el menú y agregar el botón flotante nuevamente
                 _windowManager.RemoveView(_menuView);
@@ -267,5 +283,5 @@ public class MenuTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchLi
         }
         return false;
     }
-
 }
+

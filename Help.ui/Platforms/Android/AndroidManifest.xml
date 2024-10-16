@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0">
-	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:supportsRtl="true" android:label="Help.ui"></application>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.companyname.help.ui"
+    android:versionName="1.0">
+
+	<!-- Permisos -->
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -8,4 +11,30 @@
 	<uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
 	<uses-permission android:name="android.permission.RECORD_AUDIO" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+	<!-- Aplicación -->
+	<application
+        android:allowBackup="true"
+        android:icon="@mipmap/appicon"
+        android:supportsRtl="true"
+        android:label="Help.ui"
+        android:theme="@style/MainTheme">
+
+		<!-- Servicio de Accesibilidad -->
+		<service
+            android:name="Help.ui.Searcher"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+
+			<intent-filter>
+				<action android:name="android.accessibilityservice.AccessibilityService" />
+			</intent-filter>
+
+			<meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+		</service>
+
+	</application>
+
 </manifest>
