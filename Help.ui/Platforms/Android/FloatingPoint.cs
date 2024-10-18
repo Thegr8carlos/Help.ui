@@ -6,6 +6,8 @@ using Android.Views;
 using Android.Widget;
 using Android.Graphics;
 using Android.Runtime;
+using Help.ui;
+using Help.ui.Platforms.Android;
 
 [Service(Exported = true)]
 public class FloatingButtonService : Service
@@ -179,7 +181,25 @@ public class FloatingButtonService : Service
     public void OnButton1Click(Android.Views.View view)
     {
         Console.WriteLine("Se hara la captura o toma de la informacion");
+        Console.WriteLine("Capturando los elementos de la pantalla...");
 
+        if (Searcher.IsAccessibilityServiceEnabled(this, Java.Lang.Class.FromType(typeof(Searcher))))
+        {
+            Console.WriteLine("El servicio de accesibilidad está habilitado.");
+            var ContextString = Searcher.GetScreenElementsStatic();
+            foreach(var Element in ContextString)
+            {
+                Console.WriteLine(Element);
+            }
+        }
+        else
+        {
+            Console.WriteLine("El servicio de accesibilidad NO está habilitado.");
+            // Opcionalmente, puedes redirigir al usuario a la configuración de accesibilidad
+            Intent intent = new Intent(Android.Provider.Settings.ActionAccessibilitySettings);
+            intent.AddFlags(ActivityFlags.NewTask);
+            this.StartActivity(intent);
+        }
     }
 
     public void OnButton2Click(Android.Views.View view)

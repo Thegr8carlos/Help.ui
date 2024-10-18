@@ -44,14 +44,14 @@
             <Grid HeightRequest="100"
                   VerticalOptions="End"
                   Margin="0,30,0,0">
-                <!-- Tree columns definition -->
+                
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- SVG lowerLfeft -->
+                
                 <Image x:Name="AppMode"
                        Source="voice.svg"
                        Aspect="AspectFit"
@@ -62,7 +62,7 @@
                         <TapGestureRecognizer Tapped="OnModeTapped" />
                     </Image.GestureRecognizers>
                 </Image>
-                <!-- SVG lowerright-->
+                
                 <Image x:Name="Settings"
                        Source="settings.svg"
                        Aspect="AspectFit"
