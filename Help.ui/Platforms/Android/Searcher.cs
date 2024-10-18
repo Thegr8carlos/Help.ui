@@ -9,32 +9,28 @@ using System.Collections.Generic;
 using Java.Lang;
 using Help.ui;
 
-
-
-
 [Service(Label = "Searcher", Permission = "android.permission.BIND_ACCESSIBILITY_SERVICE")]
 [IntentFilter(new[] { "android.accessibilityservice.AccessibilityService" })]
 [MetaData("android.accessibilityservice", Resource = "@xml/accessibility_service_config")]
 public class Searcher : AccessibilityService
 {
-    private const string Tag = "SearcherService";
-
-    // Lista estática para almacenar los elementos actuales de la pantalla
+    private const string Tag = "SearcherService"; // name of the service
     private static List<AccessibilityNodeInfo> ScreenElements = new List<AccessibilityNodeInfo>();
+    private string appPackageName;
 
-    // Método público para obtener los elementos de la pantalla (no estático)
+    // Gets all the elements of the screen (non-static)
     public List<AccessibilityNodeInfo> GetScreenElements()
     {
         return new List<AccessibilityNodeInfo>(ScreenElements); // Devuelve una copia de la lista
     }
 
-    // Método estático para obtener los elementos de la pantalla
+    // Gets all the elements of the screen (static)
     public static List<AccessibilityNodeInfo> GetScreenElementsStatic()
     {
         return new List<AccessibilityNodeInfo>(ScreenElements); // Devuelve una copia de los elementos en pantalla
     }
 
-    // Método público para verificar si el servicio de accesibilidad está habilitado
+    //  Cheks if the service is active
     public static bool IsAccessibilityServiceEnabled(Context context, Class accessibilityServiceClass)
     {
         int accessibilityEnabled = 0;
@@ -78,16 +74,18 @@ public class Searcher : AccessibilityService
         return false;
     }
 
-    // Evento de accesibilidad que se dispara cuando hay cambios en la UI
+    // Accesibilty event, triggers whenever the UI changees  
     public override void OnAccessibilityEvent(AccessibilityEvent e)
     {
         Log.Info(Tag, "Accessibility Event Received: " + e.EventType);
+        string eventPackageName = e.PackageName?.ToString();
+        Log.Info(Tag, $"PackageName del evento: {eventPackageName}");
         var source = e.Source;
 
         if (source != null)
         {
-            ScreenElements.Clear(); // Limpiar la lista para el nuevo evento
-            ExploreNodeInfo(source); // Capturar los nuevos elementos de la pantalla
+            ScreenElements.Clear(); 
+            ExploreNodeInfo(source); // Explores the elements of the source, the UI app
 
             if (ScreenElements.Count == 0)
             {
@@ -96,39 +94,51 @@ public class Searcher : AccessibilityService
             else
             {
                 Log.Info(Tag, $"Se encontraron {ScreenElements.Count} elementos en la pantalla.");
+                foreach (var item in ScreenElements)
+                {
+                    //Console.WriteLine(item); 
+                }
             }
-        }
+
+            source?.Recycle();         }
         else
         {
             Log.Warn(Tag, "No se pudo acceder a la fuente del evento de accesibilidad.");
         }
     }
 
-    // Método para explorar la jerarquía de la UI de manera recursiva
+    // Explores the UI in a recursive way 
     private void ExploreNodeInfo(AccessibilityNodeInfo node)
     {
         if (node == null) return;
 
-        // Añadir el nodo actual a la lista de elementos
-        ScreenElements.Add(node);
+        // filters nodes of this application
+        string nodePackageName = node.PackageName?.ToString();
+        if (!string.IsNullOrEmpty(nodePackageName) && !nodePackageName.Equals(appPackageName, StringComparison.OrdinalIgnoreCase))
+        {
+            ScreenElements.Add(node);
+        }
 
-        // Recursivamente buscar los hijos de este nodo
+        // searchs for all the son nodes
         for (int i = 0; i < node.ChildCount; i++)
         {
             var child = node.GetChild(i);
-            ExploreNodeInfo(child); // Llamada recursiva para explorar en profundidad
+            ExploreNodeInfo(child);
+            child?.Recycle(); 
         }
     }
 
-    // Se ejecuta cuando el servicio es interrumpido
+    //Whenever the service its interrupted
     public override void OnInterrupt()
     {
-        Log.Warn(Tag, "Accessibility Service Interrupted");
+        Log.Warn(Tag, "Accessibility Service Interrumpido");
     }
 
-    // Se ejecuta cuando el servicio de accesibilidad se conecta
+    // Executes when the service connects
     protected override void OnServiceConnected()
     {
+        base.OnServiceConnected();
+        appPackageName = PackageName; // Obtener el nombre del paquete de la aplicación
         AccessibilityServiceInfo info = new AccessibilityServiceInfo
         {
             EventTypes = EventTypes.AllMask, // Capturar todos los tipos de eventos

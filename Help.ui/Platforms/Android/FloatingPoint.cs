@@ -28,7 +28,7 @@ public class FloatingButtonService : Service
     {
         base.OnCreate();
 
-        // Verificar permisos
+        // Checks for permissions
         if (!Android.Provider.Settings.CanDrawOverlays(this))
         {
             Intent intent = new Intent(Android.Provider.Settings.ActionManageOverlayPermission,
@@ -38,7 +38,7 @@ public class FloatingButtonService : Service
             return;
         }
 
-        // Inicializar WindowManager
+        // Inits WindowManager that handles the floatingButton and the menu
         _windowManager = GetSystemService(Context.WindowService)?.JavaCast<IWindowManager>();
 
         if (_windowManager == null)
@@ -46,7 +46,7 @@ public class FloatingButtonService : Service
             throw new InvalidOperationException("No se pudo obtener el WindowManager");
         }
 
-        // Inflar el botón flotante
+        // Inflates the floating button i.e. fills the Layer from an xml file and returns a view
         var inflater = LayoutInflater.From(this);
         _floatingButton = inflater.Inflate(Help.ui.Resource.Layout.floating_button, null);
 
@@ -55,7 +55,7 @@ public class FloatingButtonService : Service
             throw new InvalidOperationException("No se pudo crear el botón flotante");
         }
 
-        // Inflar la vista del menú
+        // inflates the menu xml and retur the view of the menu
         _menuView = inflater.Inflate(Help.ui.Resource.Layout.AssistantMenu, null);
 
         if (_menuView == null)
@@ -63,7 +63,7 @@ public class FloatingButtonService : Service
             throw new InvalidOperationException("No se pudo crear el menú");
         }
 
-        // Configurar el tipo de ventana basado en la versión de Android
+        // sets the window based on android version  
         WindowManagerTypes layoutType;
         if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
         {
@@ -74,7 +74,7 @@ public class FloatingButtonService : Service
             layoutType = WindowManagerTypes.SystemAlert;
         }
 
-        // Configurar los parámetros del botón flotante
+        // Sets floating button parameters of the windowLayout that handles the fb
         _layoutParams = new WindowManagerLayoutParams(
             WindowManagerLayoutParams.WrapContent,
             WindowManagerLayoutParams.WrapContent,
@@ -87,7 +87,7 @@ public class FloatingButtonService : Service
             Y = 0
         };
 
-        // Configurar los parámetros del menú
+        // Sets menu parameters of his layout 
         _menuLayoutParams = new WindowManagerLayoutParams(
             WindowManagerLayoutParams.MatchParent,
             WindowManagerLayoutParams.MatchParent,
@@ -101,14 +101,14 @@ public class FloatingButtonService : Service
         };
 
 
-        // Agregar el botón flotante a la ventana
+        // Adds floating point into the wiundow manager 
         _windowManager.AddView(_floatingButton, _layoutParams);
 
-        // Inicializar el listener de toque y configurarlo en el botón flotante
+        //  Inits listener of touch and incorporate into the floating button
         _floatingButtonTouchListener = new FloatingButtonTouchListener(this, _layoutParams, _windowManager, _floatingButton);
         _floatingButton.SetOnTouchListener(_floatingButtonTouchListener);
 
-        // Agregar funcionalidad al clic del botón flotante
+        // Adds click functionality of floating button
         _floatingButton.Click += (sender, args) =>
         {
             OnFloatingButtonClick();
@@ -119,7 +119,7 @@ public class FloatingButtonService : Service
     {
         base.OnDestroy();
 
-        // Remover el botón flotante
+        // Removes floating button
         if (_floatingButton != null)
         {
             try
@@ -132,7 +132,7 @@ public class FloatingButtonService : Service
             }
         }
 
-        // Remover el menú si está visible
+        // Removes menu if it's visible
         if (_menuView != null)
         {
             try
@@ -149,17 +149,17 @@ public class FloatingButtonService : Service
 
     private void OnFloatingButtonClick()
     {
-        // Remover el botón flotante
+        // Removes floating button
         if (_floatingButton != null)
         {
             _windowManager?.RemoveView(_floatingButton);
         }
 
-        // Agregar la vista del menú
+        // Adds menu view in window manager
         if (_menuView != null)
         {
             _windowManager.AddView(_menuView, _menuLayoutParams);
-
+            // adds manually the two buttons.
             var button1 = _menuView.FindViewById<Android.Widget.Button>(_menuView.Context.Resources.GetIdentifier("button1", "id", _menuView.Context.PackageName));
             var button2 = _menuView.FindViewById<Android.Widget.Button>(_menuView.Context.Resources.GetIdentifier("button2", "id", _menuView.Context.PackageName));
 
@@ -173,11 +173,12 @@ public class FloatingButtonService : Service
                 button2.Click += (s, e) => OnButton2Click(s as Android.Views.View);
             }
 
-            // Listener para detectar toques fuera del menú
+            // Listener of out of menu clicks  
             _menuView.SetOnTouchListener(new MenuTouchListener(this, _windowManager, _menuView, _floatingButton, _layoutParams));
         }
     }
 
+    // function whenever the user wants an explication of his active screen, must send the information, recive it and display it or play the audio response
     public void OnButton1Click(Android.Views.View view)
     {
         Console.WriteLine("Se hara la captura o toma de la informacion");
@@ -195,7 +196,7 @@ public class FloatingButtonService : Service
         else
         {
             Console.WriteLine("El servicio de accesibilidad NO está habilitado.");
-            // Opcionalmente, puedes redirigir al usuario a la configuración de accesibilidad
+            // moves the user to settings... (i think i need to make in the oncreate constructor of floating button but im not sure at all)
             Intent intent = new Intent(Android.Provider.Settings.ActionAccessibilitySettings);
             intent.AddFlags(ActivityFlags.NewTask);
             this.StartActivity(intent);
@@ -208,7 +209,7 @@ public class FloatingButtonService : Service
     }
 }
 
-// Clase para manejar los eventos táctiles en el botón flotante
+// handles tactil events of the floating button
 public class FloatingButtonTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchListener
 {
     private WindowManagerLayoutParams _layoutParams;
@@ -217,7 +218,7 @@ public class FloatingButtonTouchListener : Java.Lang.Object, Android.Views.View.
     private int initialY, touchY;
     private readonly Context _context;
     private long startClickTime;
-    private static readonly int MAX_CLICK_DURATION = 200; // Duración máxima para considerar un clic
+    private static readonly int MAX_CLICK_DURATION = 200; // max clic duration 
 
     // Constructor
     public FloatingButtonTouchListener(Context context, WindowManagerLayoutParams layoutParams, IWindowManager windowManager, Android.Views.View floatingButton)
@@ -228,13 +229,13 @@ public class FloatingButtonTouchListener : Java.Lang.Object, Android.Views.View.
         _context = context;
     }
 
-    // Evento OnTouch
+    // OnTouch
     public bool OnTouch(Android.Views.View v, MotionEvent e)
     {
         switch (e.Action)
         {
             case MotionEventActions.Down:
-                startClickTime = Java.Lang.JavaSystem.CurrentTimeMillis(); // Registrar el tiempo del toque
+                startClickTime = Java.Lang.JavaSystem.CurrentTimeMillis(); // Time register when the button it's clicked 
                 initialY = _layoutParams.Y;
                 touchY = (int)e.RawY;
                 return true;
@@ -249,8 +250,8 @@ public class FloatingButtonTouchListener : Java.Lang.Object, Android.Views.View.
                 long clickDuration = Java.Lang.JavaSystem.CurrentTimeMillis() - startClickTime;
                 if (clickDuration < MAX_CLICK_DURATION)
                 {
-                    // Clic rápido -> evento de clic
-                    v.PerformClick(); // Activa la funcionalidad de clic
+                    // fast click -> click event
+                    v.PerformClick(); // sets click event
                 }
                 return true;
         }
@@ -258,6 +259,7 @@ public class FloatingButtonTouchListener : Java.Lang.Object, Android.Views.View.
     }
 }
 
+// menu handler... (need to hanle better this...) 
 public class MenuTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchListener
 {
     private Context _context;
@@ -279,7 +281,7 @@ public class MenuTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchLi
     {
         if (e.Action == MotionEventActions.Down)
         {
-            // Crear un rectángulo para obtener el área visible del menú
+            
             Android.Graphics.Rect menuRect = new Android.Graphics.Rect();
             _menuView.GetGlobalVisibleRect(menuRect);
 
@@ -288,14 +290,13 @@ public class MenuTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchLi
             int minY = 992;
             int maxY = 1401;
 
-            // Obtener las coordenadas del toque
+            
             int touchX = (int)e.RawX;
             int touchY = (int)e.RawY;
 
-            // Comprobar si está fuera del rectángulo
+            
             if (touchX < minX || touchX > maxX || touchY < minY || touchY > maxY)
             {
-                // Remover el menú y agregar el botón flotante nuevamente
                 _windowManager.RemoveView(_menuView);
                 _windowManager.AddView(_floatingButton, _floatingButtonLayoutParams);
                 return true;
