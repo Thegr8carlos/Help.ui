@@ -187,7 +187,7 @@ public class FloatingButtonService : Service
         if (Searcher.IsAccessibilityServiceEnabled(this, Java.Lang.Class.FromType(typeof(Searcher))))
         {
             Console.WriteLine("El servicio de accesibilidad está habilitado.");
-            var ContextString = Searcher.GetScreenElementsStatic();
+            var ContextString = Searcher.GetInfoAboutNodes();
             foreach(var Element in ContextString)
             {
                 Console.WriteLine(Element);

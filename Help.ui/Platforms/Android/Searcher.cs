@@ -17,13 +17,17 @@ public class Searcher : AccessibilityService
     private const string Tag = "SearcherService"; // name of the service
     private static List<AccessibilityNodeInfo> ScreenElements = new List<AccessibilityNodeInfo>();
     private string appPackageName;
+    public static List<string> InfoAboutNodes = new List<string>();
 
     // Gets all the elements of the screen (non-static)
     public List<AccessibilityNodeInfo> GetScreenElements()
     {
         return new List<AccessibilityNodeInfo>(ScreenElements); // Devuelve una copia de la lista
     }
-
+    public static List<string> GetInfoAboutNodes()
+    {
+        return new List<string>(InfoAboutNodes);
+    }
     // Gets all the elements of the screen (static)
     public static List<AccessibilityNodeInfo> GetScreenElementsStatic()
     {
@@ -76,10 +80,15 @@ public class Searcher : AccessibilityService
 
     // Accesibilty event, triggers whenever the UI changees  
     public override void OnAccessibilityEvent(AccessibilityEvent e)
-    {
-        Log.Info(Tag, "Accessibility Event Received: " + e.EventType);
+    { 
+        //Log.Info(Tag, "Accessibility Event Received: " + e.EventType);
         string eventPackageName = e.PackageName?.ToString();
-        Log.Info(Tag, $"PackageName del evento: {eventPackageName}");
+        if (eventPackageName == "com.companyname.help.ui")
+        {
+            Console.WriteLine("el usuario se encuentra en nuestra aplicacion ");
+            return;
+        }
+        //Log.Info(Tag, $"Nombre de la aplicacion  {eventPackageName}");
         var source = e.Source;
 
         if (source != null)
@@ -89,18 +98,35 @@ public class Searcher : AccessibilityService
 
             if (ScreenElements.Count == 0)
             {
-                Log.Info(Tag, "No se encontraron elementos de accesibilidad en la pantalla actual.");
+                //Log.Info(Tag, "No se encontraron elementos de accesibilidad en la pantalla actual.");
             }
             else
             {
-                Log.Info(Tag, $"Se encontraron {ScreenElements.Count} elementos en la pantalla.");
+                InfoAboutNodes.Clear();
+                //Log.Info(Tag, $"Se encontraron {ScreenElements.Count} elementos en la pantalla.");
                 foreach (var item in ScreenElements)
                 {
-                    //Console.WriteLine(item); 
+                    /*
+                     * var Text= item.Text;
+                    var Description = item.ContentDescription;
+                    var TypeElement = item.ClassName;
+                    var Cords = item.GetBoundsInScreen;
+                    var Enabled = item.Enabled;
+                    var Clickable = item.Clickable;
+                    var Focusable = item.Focusable;
+                    var Selected = item.Selected;
+                    var Scrollable = item.Scrollable;
+                    var Actions = item.ActionList;
+                    var HintText = item.HintText;
+                     */
+                    var NodeInfo = item.ToString();
+                    //Console.WriteLine($" {NodeInfo} ");
+                    InfoAboutNodes.Add( NodeInfo );
                 }
             }
 
-            source?.Recycle();         }
+            source?.Recycle();         
+        }
         else
         {
             Log.Warn(Tag, "No se pudo acceder a la fuente del evento de accesibilidad.");
@@ -136,12 +162,12 @@ public class Searcher : AccessibilityService
 
     // Executes when the service connects
     protected override void OnServiceConnected()
-    {
+    {   
         base.OnServiceConnected();
         appPackageName = PackageName; // Obtener el nombre del paquete de la aplicación
         AccessibilityServiceInfo info = new AccessibilityServiceInfo
         {
-            EventTypes = EventTypes.AllMask, // Capturar todos los tipos de eventos
+            EventTypes = EventTypes.WindowStateChanged | EventTypes.WindowContentChanged, // captures only those events
             FeedbackType = FeedbackFlags.Spoken,
             NotificationTimeout = 100,
             Flags = AccessibilityServiceFlags.Default | AccessibilityServiceFlags.IncludeNotImportantViews // Incluye vistas no importantes
