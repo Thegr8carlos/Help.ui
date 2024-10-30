@@ -178,6 +178,28 @@ public class FloatingButtonService : Service
         }
     }
 
+    public string ProcessText(string text)
+    {
+        List<string> filteredElements = new List<string>();
+        string[] elements = text.Split(';');
+
+        foreach (var element in elements)
+        {
+            // Condición corregida
+            if ((element.Contains("null") || element.Contains("packageName") || element.Contains("NodeInfo") || element.Contains("boundsInParent") || element.Contains("boundsInWindow") || element.Contains("false") || element.Contains("-1")) && !element.Contains('['))
+            {
+                continue;
+            }
+            else
+            {
+                filteredElements.Add(element);
+            }
+        }
+        string result = string.Join(";", filteredElements);
+        return result;
+
+    }
+
     // function whenever the user wants an explication of his active screen, must send the information, recive it and display it or play the audio response
     public void OnButton1Click(Android.Views.View view)
     {
@@ -187,11 +209,20 @@ public class FloatingButtonService : Service
         if (Searcher.IsAccessibilityServiceEnabled(this, Java.Lang.Class.FromType(typeof(Searcher))))
         {
             Console.WriteLine("El servicio de accesibilidad está habilitado.");
-            var ContextString = Searcher.GetInfoAboutNodes();
-            foreach(var Element in ContextString)
+            List<string> contextString;
+            lock (Searcher.InfoAboutNodes)
             {
-                Console.WriteLine(Element);
+                contextString = Searcher.GetInfoAboutNodes();
             }
+            string Context = "";
+            Console.WriteLine("ELEMENTOS CON LIMPIEZA");
+            foreach (var element in contextString)
+            {
+                //Console.WriteLine(element);
+                Context += ProcessText(element);
+            }
+            Console.WriteLine(Context);
+            Console.WriteLine(Context.Length);
         }
         else
         {

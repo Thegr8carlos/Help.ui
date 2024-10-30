@@ -8,6 +8,8 @@ using Android.Text;
 using System.Collections.Generic;
 using Java.Lang;
 using Help.ui;
+using System.Threading.Tasks;
+
 
 [Service(Label = "Searcher", Permission = "android.permission.BIND_ACCESSIBILITY_SERVICE")]
 [IntentFilter(new[] { "android.accessibilityservice.AccessibilityService" })]
@@ -93,39 +95,34 @@ public class Searcher : AccessibilityService
 
         if (source != null)
         {
-            ScreenElements.Clear(); 
-            ExploreNodeInfo(source); // Explores the elements of the source, the UI app
+            // Ejecutar el procesamiento en una tarea asíncrona
+            Task.Run(() =>
+            {
+                // Bloque de código que se ejecutará en segundo plano
+                ScreenElements.Clear();
+                ExploreNodeInfo(source); // Explora los elementos de la fuente, la aplicación de UI
 
-            if (ScreenElements.Count == 0)
-            {
-                //Log.Info(Tag, "No se encontraron elementos de accesibilidad en la pantalla actual.");
-            }
-            else
-            {
-                InfoAboutNodes.Clear();
-                //Log.Info(Tag, $"Se encontraron {ScreenElements.Count} elementos en la pantalla.");
-                foreach (var item in ScreenElements)
+                if (ScreenElements.Count == 0)
                 {
-                    /*
-                     * var Text= item.Text;
-                    var Description = item.ContentDescription;
-                    var TypeElement = item.ClassName;
-                    var Cords = item.GetBoundsInScreen;
-                    var Enabled = item.Enabled;
-                    var Clickable = item.Clickable;
-                    var Focusable = item.Focusable;
-                    var Selected = item.Selected;
-                    var Scrollable = item.Scrollable;
-                    var Actions = item.ActionList;
-                    var HintText = item.HintText;
-                     */
-                    var NodeInfo = item.ToString();
-                    //Console.WriteLine($" {NodeInfo} ");
-                    InfoAboutNodes.Add( NodeInfo );
+                    // Log.Info(Tag, "No se encontraron elementos de accesibilidad en la pantalla actual.");
                 }
-            }
+                else
+                {
+                    InfoAboutNodes.Clear();
+                    InfoAboutNodes.Add("App name : " + eventPackageName);
+                    foreach (var item in ScreenElements)
+                    {
+                        lock (InfoAboutNodes)
+                        {
+                            InfoAboutNodes.Add(item.ToString());
+                        }
+                        // Reciclar el nodo para liberar recursos
+                        item.Recycle();
+                    }
+                }
 
-            source?.Recycle();         
+                source?.Recycle();
+            });
         }
         else
         {
