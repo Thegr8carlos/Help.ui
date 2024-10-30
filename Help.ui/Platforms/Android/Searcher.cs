@@ -102,14 +102,14 @@ public class Searcher : AccessibilityService
                 ScreenElements.Clear();
                 ExploreNodeInfo(source); // Explora los elementos de la fuente, la aplicación de UI
 
-                if (ScreenElements.Count == 0)
-                {
-                    // Log.Info(Tag, "No se encontraron elementos de accesibilidad en la pantalla actual.");
-                }
-                else
-                {
-                    InfoAboutNodes.Clear();
-                    InfoAboutNodes.Add("App name : " + eventPackageName);
+            if (ScreenElements.Count == 0)
+            {
+                // Log.Info(Tag, "No se encontraron elementos de accesibilidad en la pantalla actual.");
+            }
+            else
+            {
+                InfoAboutNodes.Clear();
+                InfoAboutNodes.Add("Appname : " + eventPackageName + ";");
                     foreach (var item in ScreenElements)
                     {
                         lock (InfoAboutNodes)

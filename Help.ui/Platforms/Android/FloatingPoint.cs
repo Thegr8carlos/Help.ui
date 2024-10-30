@@ -186,18 +186,31 @@ public class FloatingButtonService : Service
         foreach (var element in elements)
         {
             // Condición corregida
-            if ((element.Contains("null") || element.Contains("packageName") || element.Contains("NodeInfo") || element.Contains("boundsInParent") || element.Contains("boundsInWindow") || element.Contains("false") || element.Contains("-1")) && !element.Contains('['))
+            /*
+             * if ((element.Contains("null") || element.Contains("packageName") || element.Contains("NodeInfo") || element.Contains("boundsInParent") || element.Contains("boundsInWindow") || element.Contains("false") || element.Contains("-1")) && !element.Contains('['))
             {
                 continue;
             }
             else
             {
                 filteredElements.Add(element);
+                Console.WriteLine(element);
             }
+             *
+             *
+             *
+             *
+             */
+            if ((element.Contains("className") || element.Contains("text") || element.Contains("contentDescription") || element.Contains("boundsInScreen") || element.Contains("Appname"))
+                && !element.Contains(": null") && !element.Contains(": false"))
+            {
+                filteredElements.Add(element);
+                Console.WriteLine(element);
+            }
+
         }
         string result = string.Join(";", filteredElements);
         return result;
-
     }
 
     // function whenever the user wants an explication of his active screen, must send the information, recive it and display it or play the audio response
