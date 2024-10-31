@@ -7,7 +7,6 @@ using Android.Widget;
 using Android.Graphics;
 using Android.Runtime;
 using Help.ui;
-using Help.ui.Platforms.Android;
 
 [Service(Exported = true)]
 public class FloatingButtonService : Service
@@ -213,10 +212,18 @@ public class FloatingButtonService : Service
         return result;
     }
 
-    // function whenever the user wants an explication of his active screen, must send the information, recive it and display it or play the audio response
-    public void OnButton1Click(Android.Views.View view)
+
+    public async Task Response(string userMessage)
     {
-        Console.WriteLine("Se hara la captura o toma de la informacion");
+        //string response = await EndPoint.GetChatResponseAsync(userMessage);
+        //Console.WriteLine($"Respuesta del asistente: {response}");
+        // Puedes añadir lógica aquí para reproducir la respuesta en audio o mostrarla en pantalla
+    }
+
+    // Método asíncrono que llama a Response y usa la respuesta
+    public async void OnButton1Click(Android.Views.View view)
+    {
+        Console.WriteLine("Se hará la captura o toma de la información");
         Console.WriteLine("Capturando los elementos de la pantalla...");
 
         if (Searcher.IsAccessibilityServiceEnabled(this, Java.Lang.Class.FromType(typeof(Searcher))))
@@ -227,20 +234,26 @@ public class FloatingButtonService : Service
             {
                 contextString = Searcher.GetInfoAboutNodes();
             }
-            string Context = "";
+
+            string context = "";
             Console.WriteLine("ELEMENTOS CON LIMPIEZA");
             foreach (var element in contextString)
             {
-                //Console.WriteLine(element);
-                Context += ProcessText(element);
+                context += ProcessText(element); // Limpiar o procesar el texto
             }
-            Console.WriteLine(Context);
-            Console.WriteLine(Context.Length);
+
+            Console.WriteLine(context);
+            Console.WriteLine($"Tamaño del contexto: {context.Length}");
+
+            // Llamada asíncrona al método Response, pasando el contexto como mensaje
+            await Response("Hola, como te encuentras? podrias decirme una historia ");
+
         }
         else
         {
             Console.WriteLine("El servicio de accesibilidad NO está habilitado.");
-            // moves the user to settings... (i think i need to make in the oncreate constructor of floating button but im not sure at all)
+
+            // Abre la configuración de accesibilidad para que el usuario lo habilite
             Intent intent = new Intent(Android.Provider.Settings.ActionAccessibilitySettings);
             intent.AddFlags(ActivityFlags.NewTask);
             this.StartActivity(intent);
