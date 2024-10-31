@@ -212,7 +212,6 @@ public class FloatingButtonService : Service
         return result;
     }
 
-
     public async Task Response(string userMessage)
     {
         //string response = await EndPoint.GetChatResponseAsync(userMessage);
