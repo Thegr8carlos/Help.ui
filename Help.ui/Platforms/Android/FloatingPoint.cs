@@ -212,14 +212,6 @@ public class FloatingButtonService : Service
         return result;
     }
 
-    public async Task Response(string userMessage)
-    {
-        //string response = await EndPoint.GetChatResponseAsync(userMessage);
-        //Console.WriteLine($"Respuesta del asistente: {response}");
-        // Puedes añadir lógica aquí para reproducir la respuesta en audio o mostrarla en pantalla
-    }
-
-    // Método asíncrono que llama a Response y usa la respuesta
     public async void OnButton1Click(Android.Views.View view)
     {
         Console.WriteLine("Se hará la captura o toma de la información");
@@ -233,7 +225,7 @@ public class FloatingButtonService : Service
             {
                 contextString = Searcher.GetInfoAboutNodes();
             }
-
+            var AppName = contextString[0];
             string context = "";
             Console.WriteLine("ELEMENTOS CON LIMPIEZA");
             foreach (var element in contextString)
@@ -243,9 +235,11 @@ public class FloatingButtonService : Service
 
             Console.WriteLine(context);
             Console.WriteLine($"Tamaño del contexto: {context.Length}");
-
-            // Llamada asíncrona al método Response, pasando el contexto como mensaje
-            await Response("Hola, como te encuentras? podrias decirme una historia ");
+            
+            ChatAssistant assistant = new ChatAssistant();
+            Console.WriteLine("Titulo de la app " + AppName);
+            string test = "";
+            await assistant.AskAsync(context);
 
         }
         else
