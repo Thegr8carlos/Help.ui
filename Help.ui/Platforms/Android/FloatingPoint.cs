@@ -7,6 +7,10 @@ using Android.Widget;
 using Android.Graphics;
 using Android.Runtime;
 using Help.ui;
+using Android.Content.PM;
+using System.Linq;
+
+
 
 [Service(Exported = true)]
 public class FloatingButtonService : Service
@@ -160,7 +164,7 @@ public class FloatingButtonService : Service
             _windowManager.AddView(_menuView, _menuLayoutParams);
             // adds manually the two buttons.
             var button1 = _menuView.FindViewById<Android.Widget.Button>(_menuView.Context.Resources.GetIdentifier("button1", "id", _menuView.Context.PackageName));
-            var button2 = _menuView.FindViewById<Android.Widget.Button>(_menuView.Context.Resources.GetIdentifier("button2", "id", _menuView.Context.PackageName));
+            var button2 = _menuView.FindViewById<Android.Widget.Button>(_menuView.Context.Resources.GetIdentifier("button_combined", "id", _menuView.Context.PackageName));
 
             if (button1 != null)
             {
@@ -180,36 +184,50 @@ public class FloatingButtonService : Service
     public string ProcessText(string text)
     {
         List<string> filteredElements = new List<string>();
+        List<string> actionElements = new List<string>();
         string[] elements = text.Split(';');
 
         foreach (var element in elements)
         {
-            // Condición corregida
-            /*
-             * if ((element.Contains("null") || element.Contains("packageName") || element.Contains("NodeInfo") || element.Contains("boundsInParent") || element.Contains("boundsInWindow") || element.Contains("false") || element.Contains("-1")) && !element.Contains('['))
-            {
-                continue;
-            }
-            else
-            {
-                filteredElements.Add(element);
-                Console.WriteLine(element);
-            }
-             *
-             *
-             *
-             *
-             */
+            // Filtrar elementos relevantes para información general
             if ((element.Contains("className") || element.Contains("text") || element.Contains("contentDescription") || element.Contains("boundsInScreen") || element.Contains("Appname"))
                 && !element.Contains(": null") && !element.Contains(": false"))
             {
                 filteredElements.Add(element);
-                Console.WriteLine(element);
             }
 
+            // Filtrar específicamente las acciones
+            if (element.Contains("actions: [") && !element.Contains(": null"))  
+            {
+                actionElements.Add(element.Split("actions: [")[1].Split(']')[0]); // Extraer la lista de acciones
+            }
         }
-        string result = string.Join(";", filteredElements);
+
+        // Combinar las listas para ver la información general y las acciones
+        string result = string.Join(";", filteredElements) + "\nAcciones: " + string.Join(", ", actionElements);
         return result;
+    }
+    public void OpenAppByPackageName(Context context, string packageName)
+    {
+        try
+        {
+            // Obtener el intent de lanzamiento para el paquete
+            Intent launchIntent = context.PackageManager.GetLaunchIntentForPackage(packageName);
+            if (launchIntent != null)
+            {
+                // Agregar flags si se llama desde un servicio
+                launchIntent.AddFlags(ActivityFlags.NewTask);
+                context.StartActivity(launchIntent);
+            }
+            else
+            {
+                Console.WriteLine($"No se encontró un intent para la aplicación: {packageName}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error al intentar abrir la aplicación: " + ex.Message);
+        }
     }
 
     public async void OnButton1Click(Android.Views.View view)
@@ -226,20 +244,36 @@ public class FloatingButtonService : Service
                 contextString = Searcher.GetInfoAboutNodes();
             }
             var AppName = contextString[0];
-            string context = "";
-            Console.WriteLine("ELEMENTOS CON LIMPIEZA");
-            foreach (var element in contextString)
-            {
-                context += ProcessText(element); // Limpiar o procesar el texto
-            }
+            //string context = "";
+            //Console.WriteLine("ELEMENTOS CON LIMPIEZA");
+            //foreach (var element in contextString)
+            //{
+            //    //Console.WriteLine(element);
+            //    context += ProcessText(element); // Limpiar o procesar el texto
+            //}
 
-            Console.WriteLine(context);
-            Console.WriteLine($"Tamaño del contexto: {context.Length}");
+            //Console.WriteLine(context);
+            //Console.WriteLine($"Tamaño del contexto: {context.Length}");
+
+
+            Console.WriteLine(AppName);
+
+
+
+
+            //string packageName = "com.google.android.youtube"; // Nombre del paquete de YouTube
+            //Console.WriteLine($"Intentando abrir la aplicación: {packageName}");
+
+            //OpenAppByPackageName(this, packageName);
+
+
+
+            var installedApps = InstalledApps.GetInstalledApps(this);
+
             
-            ChatAssistant assistant = new ChatAssistant();
-            Console.WriteLine("Titulo de la app " + AppName);
-            string test = "";
-            await assistant.AskAsync(context);
+            installedApps.ForEach(appName => Console.WriteLine(appName));
+
+            Console.WriteLine($"{installedApps.Count} aplicaciones están instaladas.");
 
         }
         else
@@ -256,6 +290,8 @@ public class FloatingButtonService : Service
     public void OnButton2Click(Android.Views.View view)
     {
         Console.WriteLine("Se hara la grabacion de audio y obtencion de la respuesta");
+        int num = new Random().Next(0, 6);
+        SearcherActions.PerformGlobalActionStatic(num);
     }
 }
 
@@ -355,4 +391,20 @@ public class MenuTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchLi
         return false;
     }
 }
+
+
+
+public class InstalledApps
+{
+    public static List<string> GetInstalledApps(Context context)
+    {
+        var packageManager = context.PackageManager;
+        var packages = packageManager.GetInstalledPackages(PackageInfoFlags.MetaData);
+
+        return packages.Select(pkg => pkg.ApplicationInfo.LoadLabel(packageManager).ToString()).ToList();
+    }
+}
+
+
+
 

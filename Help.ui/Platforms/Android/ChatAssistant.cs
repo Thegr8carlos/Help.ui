@@ -13,8 +13,8 @@ public class ChatAssistant
 
     public ChatAssistant()
     {
-        string pass = "1y8RkhQHGCXkc7bhTmZzp7dCWwFHvgFCAJxYRhLbncvgzphw3lS8JQQJ99AKACHrzpqXJ3w3AAABACOGIb6h";
-        string endpoint = "https://helpie.openai.azure.com/";
+        string pass = "";
+        string endpoint = "";
         _client = new AzureOpenAIClient(new Uri(endpoint), new System.ClientModel.ApiKeyCredential(pass));
 
     }

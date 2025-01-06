@@ -15,12 +15,12 @@
                 SemanticProperties.Description="dot net bot in a race car number eight" />
 
             <Label
-                Text="nombred del asistente"
+                Text="TechCuidamos 2.0"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 
             <Label
-                Text="Estoy aquí para ayudarte a aprender a usar tu teléfono de manera más sencilla y efectiva."
+                Text="Estoy aquí para ayudarte a usar tu teléfono de manera más sencilla y efectiva."
                 Style="{StaticResource SubHeadline}"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Text to display in the screen" />
