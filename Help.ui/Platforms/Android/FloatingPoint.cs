@@ -9,6 +9,12 @@ using Android.Runtime;
 using Help.ui;
 using Android.Content.PM;
 using System.Linq;
+using Android.Views.Accessibility;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+
 
 
 
@@ -238,25 +244,34 @@ public class FloatingButtonService : Service
         if (Searcher.IsAccessibilityServiceEnabled(this, Java.Lang.Class.FromType(typeof(Searcher))))
         {
             Console.WriteLine("El servicio de accesibilidad está habilitado.");
-            List<string> contextString;
+            List<AccessibilityNodeInfo> contextString;
             lock (Searcher.InfoAboutNodes)
             {
-                contextString = Searcher.GetInfoAboutNodes();
+                contextString = Searcher.GetScreenElementsStatic();
             }
-            var AppName = contextString[0];
             //string context = "";
-            //Console.WriteLine("ELEMENTOS CON LIMPIEZA");
-            //foreach (var element in contextString)
-            //{
-            //    //Console.WriteLine(element);
-            //    context += ProcessText(element); // Limpiar o procesar el texto
-            //}
+            Console.WriteLine("ELEMENTOS sin limpieza  de la aplicacion ");
+            Console.WriteLine(Searcher.appPackageName);
+            foreach (var element in contextString)
+            {
+                Console.WriteLine(element);
+                //context += ProcessText(element); // Limpiar o procesar el texto
+            }
+
+
+            string userMessage = $"Hola, que se puede hacer con la siguiente aplicacion {Searcher.appPackageName}";
+
+            // calls the huggin face api 
+            string apiResponse = await HuggingFaceAPI.SendRequestToHuggingFace(userMessage);
+
+            // shows the response 
+            Console.WriteLine("Respuesta de la API: " + apiResponse);
 
             //Console.WriteLine(context);
             //Console.WriteLine($"Tamaño del contexto: {context.Length}");
 
 
-            Console.WriteLine(AppName);
+            //Console.WriteLine(AppName);
 
 
 
@@ -268,12 +283,12 @@ public class FloatingButtonService : Service
 
 
 
-            var installedApps = InstalledApps.GetInstalledApps(this);
+            //var installedApps = InstalledApps.GetInstalledApps(this);
 
-            
-            installedApps.ForEach(appName => Console.WriteLine(appName));
 
-            Console.WriteLine($"{installedApps.Count} aplicaciones están instaladas.");
+            //installedApps.ForEach(appName => Console.WriteLine(appName));
+
+            //Console.WriteLine($"{installedApps.Count} aplicaciones están instaladas.");
 
         }
         else
@@ -392,7 +407,61 @@ public class MenuTouchListener : Java.Lang.Object, Android.Views.View.IOnTouchLi
     }
 }
 
+public static class HuggingFaceAPI
+{
+    private const string ApiUrl = "https://api-inference.huggingface.co/models/google/gemma-2-2b-it/v1/chat/completions";
+    private const string ApiKey = ""; // replace this with the api key 
 
+    public static async Task<string> SendRequestToHuggingFace(string userMessage)
+    {
+        var requestBody = new
+        {
+            model = "google/gemma-2-2b-it",
+            messages = new[]
+            {
+                new
+                {
+                    role = "user",
+                    content = userMessage
+                }
+            },
+            max_tokens = 500,
+            stream = true
+        };
+
+        string requestBodyJson = JsonConvert.SerializeObject(requestBody);
+
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // header with the huggin face key 
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {ApiKey}");
+
+                // creates the content based on the json and sets the name 
+                StringContent content = new StringContent(requestBodyJson, Encoding.UTF8, "application/json");
+
+                // sednd POST request 
+                HttpResponseMessage response = await client.PostAsync(ApiUrl, content);
+
+                // checks if the response was succesfull
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    return responseContent; // returns the api response 
+                }
+                else
+                {
+                    return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return $"Error al realizar la solicitud: {ex.Message}";
+        }
+    }
+}
 
 public class InstalledApps
 {

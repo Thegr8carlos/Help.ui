@@ -10,6 +10,8 @@ using Java.Lang;
 using Help.ui;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Kotlin.Jvm.Functions;
+
 
 
 [Service(Label = "Searcher", Permission = "android.permission.BIND_ACCESSIBILITY_SERVICE")]
@@ -20,7 +22,7 @@ public class Searcher : AccessibilityService
 
     private const string Tag = "SearcherService"; // name of the service
     private static List<AccessibilityNodeInfo> ScreenElements = new List<AccessibilityNodeInfo>();
-    private string appPackageName;
+    public  static string appPackageName = "";
     public static List<string> InfoAboutNodes = new List<string>();
 
     // Gets all the elements of the screen (non-static)
@@ -94,7 +96,7 @@ public class Searcher : AccessibilityService
         }
         //Log.Info(Tag, $"Nombre de la aplicacion  {eventPackageName}");
         var source = e.Source;
-
+        appPackageName = eventPackageName;
         if (source != null)
         {
             // Ejecutar el procesamiento en una tarea asíncrona
@@ -136,22 +138,27 @@ public class Searcher : AccessibilityService
     private void ExploreNodeInfo(AccessibilityNodeInfo node)
     {
         if (node == null) return;
-        int test = AccessibilityNodeInfo.AccessibilityAction.ActionClick.Id;
-        bool performed = node.PerformAction(Android.Views.Accessibility.Action.Click);
-        if (performed)
-        {
-            // succes
-        }
-        else
-        {
-            // failure
-        }
+        
+        // code used do perform an action 
+        //int test = AccessibilityNodeInfo.AccessibilityAction.ActionClick.Id;
+        //bool performed = node.PerformAction(Android.Views.Accessibility.Action.Click);
+        //if (performed)
+        //{
+        //    // succes
+        //}
+        //else
+        //{
+        //    // failure
+        //}
 
         // filters nodes of this application
         string nodePackageName = node.PackageName?.ToString();
         if (!string.IsNullOrEmpty(nodePackageName) && !nodePackageName.Equals(appPackageName, StringComparison.OrdinalIgnoreCase))
         {
-            ScreenElements.Add(node);
+            if( node.Clickable)
+            {
+                ScreenElements.Add(node);
+            } 
         }
 
         // searchs for all the son nodes
