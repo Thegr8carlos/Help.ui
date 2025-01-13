@@ -7,6 +7,8 @@ using Android.Widget;
 using Android.Graphics;
 using Android.Runtime;
 using Help.ui;
+using Android.Views.Accessibility;
+using System.Collections.Generic;
 
 [Service(Exported = true)]
 public class FloatingButtonService : Service
@@ -221,25 +223,35 @@ public class FloatingButtonService : Service
         {
             Console.WriteLine("El servicio de accesibilidad está habilitado.");
             List<string> contextString;
+            List < AccessibilityNodeInfo > contexNodes;
             lock (Searcher.InfoAboutNodes)
             {
                 contextString = Searcher.GetInfoAboutNodes();
             }
+            lock ( Searcher.ScreenElements)
+            {
+                contexNodes = Searcher.ScreenElements;
+            }
             var AppName = contextString[0];
             string context = "";
-            Console.WriteLine("ELEMENTOS CON LIMPIEZA");
+            Console.WriteLine("ELEMENTOS sin LIMPIEZA");
+            foreach (var node in contexNodes)
+            {
+                Console.WriteLine(node.ToString());
+            }
+            Console.WriteLine("----------------------------------------------------------------------------ELEMENTOS con LIMPIEZA----------------------------------------------------------------------------");
+            Console.WriteLine("Titulo de la app " + AppName);
             foreach (var element in contextString)
             {
-                context += ProcessText(element); // Limpiar o procesar el texto
+                Console.WriteLine($"{element}");
+                //context += ProcessText(element); // Limpiar o procesar el texto
             }
 
-            Console.WriteLine(context);
-            Console.WriteLine($"Tamaño del contexto: {context.Length}");
+            //Console.WriteLine(context);
+            //Console.WriteLine($"Tamaño del contexto: {context.Length}");
             
-            ChatAssistant assistant = new ChatAssistant();
-            Console.WriteLine("Titulo de la app " + AppName);
-            string test = "";
-            await assistant.AskAsync(context);
+            
+            
 
         }
         else

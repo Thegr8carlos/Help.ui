@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Java.Lang;
 using Help.ui;
 using System.Threading.Tasks;
+using static Android.Views.WindowInsetsAnimation;
 
 
 [Service(Label = "Searcher", Permission = "android.permission.BIND_ACCESSIBILITY_SERVICE")]
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 public class Searcher : AccessibilityService
 {
     private const string Tag = "SearcherService"; // name of the service
-    private static List<AccessibilityNodeInfo> ScreenElements = new List<AccessibilityNodeInfo>();
+    public static List<AccessibilityNodeInfo> ScreenElements = new List<AccessibilityNodeInfo>();
     private string appPackageName;
     public static List<string> InfoAboutNodes = new List<string>();
 
@@ -114,7 +115,27 @@ public class Searcher : AccessibilityService
                     {
                         lock (InfoAboutNodes)
                         {
-                            InfoAboutNodes.Add(item.ToString());
+                            Android.Graphics.Rect bounds = new ();
+                            item.GetBoundsInScreen(bounds); // Llena el objeto bounds con las coordenadas del nodo                        
+                            // Formatear la información del nodo, incluyendo las coordenadas
+                            string info = "Tipo de widget: " + item.ClassName;
+
+                            if (!string.IsNullOrEmpty(item.Text))
+                            {
+                                info += $"; Texto: {item.Text}";
+                            }
+
+                            if (!string.IsNullOrEmpty(item.ContentDescription))
+                            {
+                                info += $"; Contenido: {item.ContentDescription}";
+                            }
+
+                            // Agregar siempre las coordenadas
+                            info += $"; Coordenadas: [Izquierda: {bounds.Left}, Arriba: {bounds.Top}, Derecha: {bounds.Right}, Abajo: {bounds.Bottom}]";
+
+                            // Agregar info a la lista
+                            InfoAboutNodes.Add(info);
+                            //InfoAboutNodes.Add(item.ToString());
                         }
                         // Reciclar el nodo para liberar recursos
                         item.Recycle();
@@ -139,7 +160,10 @@ public class Searcher : AccessibilityService
         string nodePackageName = node.PackageName?.ToString();
         if (!string.IsNullOrEmpty(nodePackageName) && !nodePackageName.Equals(appPackageName, StringComparison.OrdinalIgnoreCase))
         {
-            ScreenElements.Add(node);
+            if (node.Clickable)
+            {
+                ScreenElements.Add(node);
+            }
         }
 
         // searchs for all the son nodes
